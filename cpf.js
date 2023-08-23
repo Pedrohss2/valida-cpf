@@ -15,55 +15,70 @@ Se o número digito for maior que 9, consideramos 0.
 Se o número digito for maior que 9, consideramos 0.
 */
 
-function ValidaCpf(cpfEnviado) {
-    Object.defineProperty(this, 'cpfLimpo', {
-        enumerable: true,
-
-        get: function() {
-            return cpfEnviado.replace(/\D+/g, '');
+( function() {
+    let input = document.querySelector("#inputNumber");
+    let button = document.querySelector(".button");
+    let resposta = document.querySelector(".resposta");
+    
+    function marcaraDeFormatação() {
+        if(input.value.length == 3 || input.value.length == 7) input.value += '.';
+    
+        if(input.value.length == 11) input.value += '-';
+    }
+    
+    function ValidaCpf(cpfEnviado) {
+        Object.defineProperty(this, 'cleanCpf', {
+            enumerable: true,
+    
+            get: () =>{
+                return cpfEnviado.replace(/\D+/g, '');
+            }
+        });
+    }
+    
+    ValidaCpf.prototype.validateCpf = function() {
+        if(typeof this.cleanCpf === 'undefined') return false;
+        if(this.cleanCpf.length !== 11) return false;
+        if(this.isSequancia()) return false;
+    
+        const cpfParsial = this.cleanCpf.slice(0, -2);
+    
+        const firstDigt = this.createDigit(cpfParsial);
+        const secondDigit = this.createDigit(cpfParsial + firstDigt);
+    
+        const newCpf = cpfParsial + firstDigt + secondDigit;
+    
+        return newCpf === this.cleanCpf;
+    }
+    
+    ValidaCpf.prototype.createDigit = function(cpfParsial)    {
+        const arrayOfCpf = Array.from(cpfParsial);
+        let regressive = arrayOfCpf.length + 1; 
+    
+        const cpfNumbers = arrayOfCpf.reduce( (accumulator, value) => {
+            accumulator += (regressive *  Number(value));
+            regressive--;
+            return accumulator;
+        }, 0);
+    
+        let digit = 11 - (cpfNumbers % 11);
+    
+        return digit > 9? '0': digit;
+    }
+    
+    ValidaCpf.prototype.isSequancia = function() {
+        const sequence =  this.cleanCpf[0].repeat(this.cleanCpf.length);
+        return sequence === this.cleanCpf;
+    }
+    
+    button.addEventListener('click', function() {
+        let cpf = new ValidaCpf(input.value)
+        try {
+            let validates = cpf.validateCpf() == true ? 'CPF válido': 'CPF INVÁLIDO';  
+            resposta.innerHTML =  validates;
+        } catch(error) {
+            console.log(error);
         }
     });
-}
-ValidaCpf.prototype.valida = function() {
-    if(typeof this.cpfLimpo === 'undefined') return false;
-    if(this.cpfLimpo.length !== 11) return false;
-    if(this.isSequancia()) return false;
-
-    const cpfParsial = this.cpfLimpo.slice(0, -2);
-
-    const digito1 = this.criaDigito(cpfParsial);
-    const digito2 = this.criaDigito(cpfParsial + digito1);
-
-    const novoCpf = cpfParsial + digito1 + digito2;
-
-    return novoCpf === this.cpfLimpo;
-}
-
-ValidaCpf.prototype.criaDigito = function(cpfParsial)    {
-    const arrayOfCpf = Array.from(cpfParsial);
-    let regressivo = arrayOfCpf.length + 1;
-
-    const valor = arrayOfCpf.reduce( (ac, val) => {
-        ac += (regressivo *  Number(val));
-        regressivo--;
-        return ac;
-    }, 0);
-
-    let digito = 11 - (valor % 11);
-    return digito > 9? '0': digito;
-}
-
-ValidaCpf.prototype.isSequancia = function() {
-    const sequencia =  this.cpfLimpo[0].repeat(this.cpfLimpo.length);
-    return sequencia === this.cpfLimpo;
-}
-
-const cpf = new ValidaCpf('705.484.450-26');
-console.log(cpf.valida())
-
-try {
-    let valida = cpf.valida() == true ? 'CPF válido, você pode comprar igual um louco e ficar devendo :)': 'CPF INVÁLIDO';  
-    console.log(valida)
-} catch(error) {
-    console.log(error);
-}
+})
+   

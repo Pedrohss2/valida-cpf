@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Valida CPF</title>
+</head>
+    <body>
+        <section >
+            <div class="form">
+                    <h1>Validador de CPF</h1>
+                    <p>Digite um <strong>CPF</strong> e aperte em "validar" para verificar se o cpf é válido ou falso</p>
+
+                    <label for="">
+                        CPF:
+                        <input type="text"  id="inputNumber"   autocomplete="off" maxlength="14" placeholder="Digite seu CPF aqui" onkeyup="marcaraDeFormatação">
+                    </label>
+
+                    <button value="validar" class="button">Validar</button>
+
+                    <label for="">
+                        RESPOSTA:
+                        <textarea name="" id="" cols="45" rows="5" disabled class="resposta"></textarea>
+                    </label>
+            </div>
+        </section>
+
+        <script src="cpf.js"></script>
+    </body>
+</html>
