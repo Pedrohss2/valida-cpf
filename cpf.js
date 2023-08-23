@@ -35,7 +35,7 @@ Se o número digito for maior que 9, consideramos 0.
             }
         });
     }
-    
+
     ValidaCpf.prototype.validateCpf = function() {
         if(typeof this.cleanCpf === 'undefined') return false;
         if(this.cleanCpf.length !== 11) return false;
@@ -80,5 +80,4 @@ Se o número digito for maior que 9, consideramos 0.
             console.log(error);
         }
     });
-})
-   
+})();
