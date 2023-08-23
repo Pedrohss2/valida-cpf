@@ -15,69 +15,68 @@ Se o número digito for maior que 9, consideramos 0.
 Se o número digito for maior que 9, consideramos 0.
 */
 
-( function() {
-    let input = document.querySelector("#inputNumber");
-    let button = document.querySelector(".button");
-    let resposta = document.querySelector(".resposta");
-    
-    function marcaraDeFormatação() {
-        if(input.value.length == 3 || input.value.length == 7) input.value += '.';
-    
-        if(input.value.length == 11) input.value += '-';
-    }
-    
-    function ValidaCpf(cpfEnviado) {
-        Object.defineProperty(this, 'cleanCpf', {
-            enumerable: true,
-    
-            get: () =>{
-                return cpfEnviado.replace(/\D+/g, '');
-            }
-        });
-    }
 
-    ValidaCpf.prototype.validateCpf = function() {
-        if(typeof this.cleanCpf === 'undefined') return false;
-        if(this.cleanCpf.length !== 11) return false;
-        if(this.isSequancia()) return false;
+let input = document.querySelector("#inputNumber");
+let button = document.querySelector(".button");
+let resposta = document.querySelector(".resposta");
+
+function mascaraDeFormatação() {
+    if(input.value.length == 3 || input.value.length == 7) input.value += '.';
+
+    if(input.value.length == 11) input.value += '-';
+}
     
-        const cpfParsial = this.cleanCpf.slice(0, -2);
+function ValidaCpf(cpfEnviado) {
+    Object.defineProperty(this, 'cleanCpf', {
+        enumerable: true,
     
-        const firstDigt = this.createDigit(cpfParsial);
-        const secondDigit = this.createDigit(cpfParsial + firstDigt);
-    
-        const newCpf = cpfParsial + firstDigt + secondDigit;
-    
-        return newCpf === this.cleanCpf;
-    }
-    
-    ValidaCpf.prototype.createDigit = function(cpfParsial)    {
-        const arrayOfCpf = Array.from(cpfParsial);
-        let regressive = arrayOfCpf.length + 1; 
-    
-        const cpfNumbers = arrayOfCpf.reduce( (accumulator, value) => {
-            accumulator += (regressive *  Number(value));
-            regressive--;
-            return accumulator;
-        }, 0);
-    
-        let digit = 11 - (cpfNumbers % 11);
-    
-        return digit > 9? '0': digit;
-    }
-    
-    ValidaCpf.prototype.isSequancia = function() {
-        const sequence =  this.cleanCpf[0].repeat(this.cleanCpf.length);
-        return sequence === this.cleanCpf;
-    }
-    
-    button.addEventListener('click', function() {
-        let cpf = new ValidaCpf(input.value)
-        try {
-            let validates = cpf.validateCpf() == true ? 'CPF válido': 'CPF INVÁLIDO';  
-            resposta.innerHTML =  validates;
-        } catch(error) {
-            console.log(error);
+        get: () =>{
+            return cpfEnviado.replace(/\D+/g, '');
         }
     });
-})();
+}
+
+ValidaCpf.prototype.validateCpf = function() {
+    if(typeof this.cleanCpf === 'undefined') return false;
+    if(this.cleanCpf.length !== 11) return false;
+    if(this.isSequancia()) return false;
+    
+    const cpfParsial = this.cleanCpf.slice(0, -2);
+    
+    const firstDigt = this.createDigit(cpfParsial);
+    const secondDigit = this.createDigit(cpfParsial + firstDigt);
+    
+    const newCpf = cpfParsial + firstDigt + secondDigit;
+    
+    return newCpf === this.cleanCpf;
+}
+    
+ValidaCpf.prototype.createDigit = function(cpfParsial)    {
+    const arrayOfCpf = Array.from(cpfParsial);
+    let regressive = arrayOfCpf.length + 1; 
+    
+    const cpfNumbers = arrayOfCpf.reduce( (accumulator, value) => {
+        accumulator += (regressive *  Number(value));
+        regressive--;
+        return accumulator;
+    }, 0);
+    
+    let digit = 11 - (cpfNumbers % 11);
+    
+    return digit > 9? '0': digit;
+}
+    
+ValidaCpf.prototype.isSequancia = function() {
+    const sequence =  this.cleanCpf[0].repeat(this.cleanCpf.length);
+    return sequence === this.cleanCpf;
+}
+    
+button.addEventListener('click', function() {
+    let cpf = new ValidaCpf(input.value)
+    try {
+        let validates = cpf.validateCpf() == true ? 'CPF válido': 'CPF INVÁLIDO';  
+        resposta.innerHTML =  validates;
+    } catch(error) {
+        console.log(error);
+    }
+});
