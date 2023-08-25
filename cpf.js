@@ -4,7 +4,7 @@ let input = document.querySelector("#inputNumber");
 let button = document.querySelector(".button");
 let resposta = document.querySelector(".resposta");
 
-function mascaraDeFormatação() {
+function mascaraDeFormatacao() {
     if(input.value.length == 3 || input.value.length == 7) input.value += '.';
     if(input.value.length == 11) input.value += '-';
 }
