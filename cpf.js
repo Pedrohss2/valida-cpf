@@ -22,59 +22,56 @@ let resposta = document.querySelector(".resposta");
 
 function mascaraDeFormatação() {
     if(input.value.length == 3 || input.value.length == 7) input.value += '.';
-
     if(input.value.length == 11) input.value += '-';
 }
-    
-function ValidaCpf(cpfEnviado) {
-    Object.defineProperty(this, 'cleanCpf', {
-        enumerable: true,
-    
-        get: () =>{
-            return cpfEnviado.replace(/\D+/g, '');
-        }
-    });
-}
 
-ValidaCpf.prototype.validateCpf = function() {
-    if(typeof this.cleanCpf === 'undefined') return false;
-    if(this.cleanCpf.length !== 11) return false;
-    if(this.isSequancia()) return false;
-    
-    const cpfParsial = this.cleanCpf.slice(0, -2);
-    
-    const firstDigt = this.createDigit(cpfParsial);
-    const secondDigit = this.createDigit(cpfParsial + firstDigt);
-    
-    const newCpf = cpfParsial + firstDigt + secondDigit;
-    
-    return newCpf === this.cleanCpf;
+class ValidaCpf {
+    constructor(cpf) {
+        this.cpf = cpf.replace(/\D+/g, '');
+    }
+
+    valida() {
+        if(typeof this.cpf !== 'string') return false;
+        if(!this.cpf) return false;
+        if(this.cpf.length !== 11) return false;
+        if(!this.geraCpf()) return false;
+        if(this.sequencia()) return false;
+
+        return this.geraCpf(); //Retornado a função que gera o cpf
+    }
+
+    geraCpf() {
+        const cpfSemDigito = this.cpf.slice(0, -2);
+        const digito1 = this.criaDigit(cpfSemDigito); 
+        const digito2 = this.criaDigit(cpfSemDigito + digito1) ;
+        const novoCpf = cpfSemDigito + digito1 + digito2;
+
+       return novoCpf === this.cpf;
+    }
+
+    criaDigit(cpfSemDigito) {
+        let total = 0;
+        let regressivo = cpfSemDigito.length + 1;
+
+        for(let stringNmerica of cpfSemDigito) {
+            total += regressivo * Number(stringNmerica)
+            regressivo--;
+        }
+       
+        let digito = 11 - (total % 11);
+        return digito <= 9 ? digito: '0';
+    }
+
+    sequencia() {
+        return this.cpf.charAt(0).repeat(11) === this.cpf;
+    }
 }
     
-ValidaCpf.prototype.createDigit = function(cpfParsial)    {
-    const arrayOfCpf = Array.from(cpfParsial);
-    let regressive = arrayOfCpf.length + 1; 
-    
-    const cpfNumbers = arrayOfCpf.reduce( (accumulator, value) => {
-        accumulator += (regressive *  Number(value));
-        regressive--;
-        return accumulator;
-    }, 0);
-    
-    let digit = 11 - (cpfNumbers % 11);
-    
-    return digit > 9? '0': digit;
-}
-    
-ValidaCpf.prototype.isSequancia = function() {
-    const sequence =  this.cleanCpf[0].repeat(this.cleanCpf.length);
-    return sequence === this.cleanCpf;
-}
-    
+// Adiconando um evento de click para executar o código
 button.addEventListener('click', function() {
-    let cpf = new ValidaCpf(input.value)
+    const cpf = new ValidaCpf(input.value);
     try {
-        let validates = cpf.validateCpf() == true ? 'CPF válido': 'CPF INVÁLIDO';  
+        let validates = cpf.valida() == true ? 'CPF válido': 'CPF INVÁLIDO';  
         resposta.innerHTML =  validates;
     } catch(error) {
         console.log(error);
